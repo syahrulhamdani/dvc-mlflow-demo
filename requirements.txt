@@ -1,0 +1,6 @@
+dvc[gs]
+fastapi[all]
+mlflow
+numpy
+pandas
+scikit-learn
