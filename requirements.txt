@@ -1,3 +1,4 @@
+deepchecks
 dvc[gs]
 fastapi[all]
 mlflow
