@@ -1,0 +1,4 @@
+[core]
+    remote = 20221203
+['remote "20221203"']
+    url = gs://dvc-cerita/havana/20221203

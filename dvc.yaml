@@ -1,0 +1,20 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py -d data/raw/lending_club.csv
+    deps:
+    - data/raw/lending_club.csv
+    - src/prepare.py
+    outs:
+    - data/split/lending_club_train.csv
+    - data/split/lending_club_test.csv
+  train:
+    cmd: python src/train.py -d data/split/lending_club_train.csv -m outputs/models/model.joblib
+      --metrics outputs/metrics/train_metrics.json
+    deps:
+    - data/split/lending_club_train.csv
+    - src/train.py
+    outs:
+    - outputs/models/model.joblib
+    metrics:
+    - outputs/metrics/train_metrics.json:
+        cache: false

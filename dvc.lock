@@ -1,0 +1,35 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py -d data/raw/lending_club.csv
+    deps:
+    - path: data/raw/lending_club.csv
+      md5: fec9c652a5be5c5539c961265c3ab56b
+      size: 3914642
+    - path: src/prepare.py
+      md5: a28dc6ca08391b23985eac4ff1955836
+      size: 2113
+    outs:
+    - path: data/split/lending_club_test.csv
+      md5: 95df0776df7319dc30e48ccb2a9c1267
+      size: 783090
+    - path: data/split/lending_club_train.csv
+      md5: eed3b4d28e3fb8b303d51399a342e183
+      size: 3131872
+  train:
+    cmd: python src/train.py -d data/split/lending_club_train.csv -m outputs/models/model.joblib
+      --metrics outputs/metrics/train_metrics.json
+    deps:
+    - path: data/split/lending_club_train.csv
+      md5: eed3b4d28e3fb8b303d51399a342e183
+      size: 3131872
+    - path: src/train.py
+      md5: b57f1a9a661c6224584b860b3e4ba9ed
+      size: 2533
+    outs:
+    - path: outputs/metrics/train_metrics.json
+      md5: f681dab6ca19ec3499985b6a4031987b
+      size: 534
+    - path: outputs/models/model.joblib
+      md5: ae44aa57e150b7c85f68b793d28f46e5
+      size: 1605
