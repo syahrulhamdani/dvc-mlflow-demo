@@ -5,9 +5,10 @@ from time import time
 from pathlib import Path
 
 import joblib
+import mlflow
 import pandas as pd
 import yaml
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from sklearn.pipeline import Pipeline
 
@@ -39,6 +40,12 @@ def _get_args(argv=None):
         help="Filepath to save the model performance. Example: metrics.json",
         default="outputs/metrics/train_metrics.json"
     )
+    parser.add_argument(
+        "--experiment_name",
+        type=str,
+        help="Experiment name",
+        default="default-experiment"
+    )
     args, _ = parser.parse_known_args(argv)
     print(args)
     return args
@@ -55,7 +62,12 @@ def _check_dir(directory: Path):
 def create_model():
     model = Pipeline(
         [
-            ("estimator", LogisticRegression(random_state=PARAMS["seed"]))
+            ("estimator", RandomForestClassifier(
+                max_depth=PARAMS["hyperparameters"]["max_depth"],
+                n_estimators=PARAMS["hyperparameters"]["n_estimators"],
+                min_samples_split=PARAMS["hyperparameters"]["min_samples_split"],
+                min_samples_leaf=PARAMS["hyperparameters"]["min_samples_leaf"],
+                random_state=PARAMS["seed"]))
         ]
     )
     return model
@@ -64,6 +76,7 @@ def create_model():
 def main(argv=None):
     """Main function to train model."""
     args = _get_args(argv)
+    mlflow.set_experiment(args.experiment_name)
 
     print("Start training model")
     start = time()
@@ -84,6 +97,7 @@ def main(argv=None):
     features = features.select_dtypes(include="number")
     target = data["loan_status"]
 
+    mlflow.sklearn.autolog()
     model = create_model()
     model.fit(features, target)
 
@@ -93,6 +107,8 @@ def main(argv=None):
     report = classification_report(target, predictions, output_dict=True)
     with open(metrics_filepath, "w") as f:
         json.dump(report, f)
+
+    mlflow.sklearn.autolog(disable=True)
 
     print(f"Done training in {time()-start:3f}s")
 
