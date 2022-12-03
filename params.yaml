@@ -1,0 +1,10 @@
+prepare:
+  test_size: 0.2
+  seed: 11
+train:
+  col_to_drop:
+    - issue_d
+    - loan_status
+    - revol_util
+    - pub_rec_bankruptcies
+  seed: 11
